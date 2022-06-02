@@ -1,0 +1,42 @@
+---
+name: blog-server
+services:
+  server:
+    build:
+      dockerfile: server/Dockerfile
+      context: .
+    environment:
+      - DATABASE_URL=postgresql://developer:developer@postgres:5432/blog_server
+    ports:
+      # prisma studio
+      - "5555:5555"
+      # our GraphQL server
+      - "4000:4000"
+    command: npx prisma studio
+    depends_on:
+      postgres:
+        condition: service_started
+    volumes:
+      - ./server:/app/:delegated
+
+  client:
+    build:
+      dockerfile: client/Dockerfile
+      context: .
+    environment:
+      - NODE_OPTIONS=--openssl_legacy_provider
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/client:delegated
+
+  postgres:
+    image: "postgres:latest"
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=developer
+      - POSTGRES_USER=developer
+      - POSTGRES_DB=blog_server
+    ports:
+      - "5432:5432"
+
