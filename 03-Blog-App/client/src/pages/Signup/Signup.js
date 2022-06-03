@@ -1,45 +1,36 @@
-import { useMutation, gql } from "@apollo/client";
-import Button from "@restart/ui/esm/Button";
-import React, { useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
+/* eslint-disable no-unused-vars */
+import { gql, useMutation } from '@apollo/client'
+import Button from '@restart/ui/esm/Button'
+import React, { useEffect, useState } from 'react'
+import { Form } from 'react-bootstrap'
 
 const SIGNUP = gql`
-  mutation Signup(
-    $email: String!
-    $password: String!
-    $name: String!
-    $bio: String!
-  ) {
-    signup(
-      credentials: { email: $email, password: $password }
-      name: $name
-      bio: $bio
-    ) {
-      userErrors {
-        message
-      }
-      token
+  mutation SignUp($email: String!, $password: String!, $name: String!, $bio: String!) {
+  signup(credentials: { email: $email, password: $password }, name: $name, bio: $bio) {
+    userErrors {
+      message
     }
+    token
   }
-`;
+}
+`
 
 export default function Signup() {
-  const [signup, { data, loading }] = useMutation(SIGNUP);
+  const [signup, { data, loading }] = useMutation(SIGNUP)
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
-
   const handleClick = () => {
     signup({
       variables: {
         email,
         password,
         name,
-        bio,
-      },
-    });
+        bio
+      }
+    })
   };
 
   const [error, setError] = useState(null);
@@ -47,13 +38,15 @@ export default function Signup() {
   useEffect(() => {
     if (data) {
       if (data.signup.userErrors.length) {
-        setError(data.signup.userErrors[0].message);
+        setError(data.signup.userErrors.map(error => error.message).join('\n'))
       }
       if (data.signup.token) {
-        localStorage.setItem("token", data.signup.token);
+        setError('')
+        localStorage.setItem('token', data.signup.token)
       }
     }
-  }, [data]);
+  }, [data])
+
   return (
     <div>
       <Form>

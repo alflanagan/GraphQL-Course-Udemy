@@ -1,12 +1,15 @@
-import logo from "./logo.svg";
-import "./App.css";
-import Post from "./components/Post/Post";
-import { Route, Switch } from "react-router";
-import Posts from "./pages/Posts/Posts";
-import Profile from "./pages/Profile/Profile";
-import "bootstrap/dist/css/bootstrap.min.css";
-import Signup from "./pages/Signup/Signup";
-import Signin from "./pages/Signin/Signin";
+/* eslint-disable no-unused-vars */
+import './App.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
+
+import { Route, Switch } from 'react-router'
+
+import Post from './components/Post/Post'
+import logo from './logo.svg'
+import Posts from './pages/Posts/Posts'
+import Profile from './pages/Profile/Profile'
+import Signin from './pages/Signin/Signin'
+import Signup from './pages/Signup/Signup'
 
 function App() {
   return (

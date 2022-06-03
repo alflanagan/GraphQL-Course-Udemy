@@ -1,26 +1,33 @@
-import { useMutation, gql } from "@apollo/client";
-import React, { useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+/* eslint-disable no-unused-vars */
+import { gql, useMutation } from '@apollo/client'
+import React, { useEffect, useState } from 'react'
+import { Button, Form, Modal } from 'react-bootstrap'
 
 const CREATE_POST = gql`
   mutation CreatePost($title: String!, $content: String!) {
-    postCreate(post: { title: $title, content: $content }) {
+    postCreate(post: {
+      title: $title,
+      content: $content
+      }) {
       userErrors {
         message
       }
       post {
         title
-        createdAt
         content
+        published
+        createdAt
         user {
           name
         }
       }
     }
   }
-`;
+`
 
 export default function AddPostModal() {
+  const [createPost, { data, loading }] = useMutation(CREATE_POST)
+
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -28,16 +35,27 @@ export default function AddPostModal() {
 
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
+  const [error, setError] = useState('')
 
-  const [addPost, { data, loading }] = useMutation(CREATE_POST);
+  useEffect(() => {
+    if (data) {
+      if (data.postCreate.userErrors.length) {
+        setError(data.postCreate.userErrors.map(error => error.message).join('\n'))
+      } else {
+        handleClose()
+      }
+    }
+    }, [data])
 
   const handleClick = () => {
-    addPost({
+    if (!title || !content) return
+
+    createPost({
       variables: {
         title,
-        content,
-      },
-    });
+        content
+      }
+    })
   };
 
   return (
@@ -82,6 +100,7 @@ export default function AddPostModal() {
           </Form>
         </Modal.Body>
         <Modal.Footer>
+          {error && <p>{error}</p>}
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>

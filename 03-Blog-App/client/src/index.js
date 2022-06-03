@@ -1,37 +1,33 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter } from "react-router-dom";
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  createHttpLink,
-} from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
+import './index.css'
+
+import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client'
+import { setContext } from '@apollo/client/link/context'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { BrowserRouter } from 'react-router-dom'
+
+import App from './App'
+import reportWebVitals from './reportWebVitals'
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:4000/graphql",
-});
+  uri: 'http://localhost:4000/graphql/',
+
+})
 
 const authLink = setContext((_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  const token = localStorage.getItem("token");
-  // return the headers to the context so httpLink can read them
+  const token = localStorage.getItem('token')
   return {
     headers: {
       ...headers,
-      authorization: token,
-    },
-  };
-});
+      authorization: token
+    }
+  }
+})
 
-export const client = new ApolloClient({
+const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
-});
+})
 
 ReactDOM.render(
   <React.StrictMode>

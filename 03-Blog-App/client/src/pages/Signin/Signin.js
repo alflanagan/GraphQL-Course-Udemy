@@ -1,46 +1,53 @@
-import React, { useState, useEffect } from "react";
-import { gql, useMutation } from "@apollo/client";
-import { Form } from "react-bootstrap";
-import Button from "@restart/ui/esm/Button";
+/* eslint-disable no-unused-vars */
+import { gql, useMutation as useGqlMutation, useMutation } from '@apollo/client'
+import Button from '@restart/ui/esm/Button'
+import React, { useEffect, useState } from 'react'
+import { Form } from 'react-bootstrap'
 
-const SIGNUP = gql`
-  mutation Signup($email: String!, $password: String!) {
-    signin(credentials: { email: $email, password: $password }) {
-      userErrors {
-        message
-      }
-      token
+const SIGNIN = gql`
+  mutation UserSignin($email: String!, $password: String!) {
+    signin(credentials: {
+      email: $email,
+      password: $password
+      }) {
+    userErrors {
+      message
     }
+    token
   }
-`;
+}
+`
 
 export default function Signin() {
-  const [signup, { data, loading }] = useMutation(SIGNUP);
+
+  const [signin, {data, loading}] = useMutation(SIGNIN)
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const handleClick = () => {
-    signup({
-      variables: {
-        email,
-        password,
-      },
-    });
-  };
 
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (data) {
       if (data.signin.userErrors.length) {
-        setError(data.signin.userErrors[0].message);
+        setError(data.signin.userErrors.map(error => error.message).join('\n'))
       }
       if (data.signin.token) {
-        localStorage.setItem("token", data.signin.token);
+        localStorage.setItem('token', data.signin.token)
       }
     }
-  }, [data]);
+  }, [data])
+
+  const handleClick = () => {
+    // signin returns a promise, but through the magic of useMutation and useEffect, we
+    // don't need to do anything with it here.
+    signin({
+      variables: {
+        email,
+        password
+      }
+    })
+  }
 
   return (
     <div>
