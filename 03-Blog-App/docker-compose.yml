@@ -12,7 +12,7 @@ services:
       - "5555:5555"
       # our GraphQL server
       - "4000:4000"
-    command: npx prisma studio
+    command: /app/server_start.sh
     depends_on:
       postgres:
         condition: service_started
@@ -29,6 +29,10 @@ services:
       - "3000:3000"
     volumes:
       - ./client:/client:delegated
+    depends_on:
+      server:
+        condition: service_started
+    command: npm start
 
   postgres:
     image: "postgres:latest"
@@ -39,4 +43,11 @@ services:
       - POSTGRES_DB=blog_server
     ports:
       - "5432:5432"
+    volumes:
+      - graphqlcourse_data:/var/lib/postgresql/data
+
+volumes:
+  graphqlcourse_data:
+    external:
+      true
 
